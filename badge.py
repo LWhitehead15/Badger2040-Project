@@ -36,9 +36,7 @@ current_image = 1
 total_images = 7
 
 
-# ------------------------------
 #      Utility functions
-# ------------------------------
 
 # Reduce the size of a string until it fits within a given width
 def truncatestring(text, text_size, width):
@@ -63,9 +61,7 @@ def imageswap(imagename):
             pass
     return BADGE_IMAGE
 
-# ------------------------------
 #      Drawing functions
-# ------------------------------
 
 def draw_badge_menu():
     # Top Arrow (Side panel) - REDO
@@ -98,10 +94,6 @@ def draw_badge_1():
     display.line(WIDTH - IMAGE_WIDTH-10, 0, WIDTH - IMAGE_WIDTH-10, HEIGHT - 1)
     display.line(WIDTH - IMAGE_WIDTH-10, HEIGHT - 1, WIDTH - 10, HEIGHT - 1)
     display.line(WIDTH - 10, 0, WIDTH - 10, HEIGHT - 1)
-
-    # Uncomment this if a white background is wanted behind the company
-    # display.pen(15)
-    # display.rectangle(1, 1, TEXT_WIDTH, COMPANY_HEIGHT - 1)
 
     # Draw the company
     display.pen(15)  # Change this to 0 if a white background is used
@@ -174,9 +166,6 @@ def draw_badge_2():
     USEABLE_AREA_WIDTH = (WIDTH - IMAGE_WIDTH) - 10
     USEABLE_AREA_HEIGHT = HEIGHT - 2
     
-    # display.rectangle(USEABLE_AREA_X, USEABLE_AREA_Y, USEABLE_AREA_WIDTH, USEABLE_AREA_HEIGHT) # Top
-    
-    
     display.font("sans")
     display.thickness(2)
     badge_title = 'Details:'
@@ -246,10 +235,6 @@ def draw_badge_3():
     display.line(WIDTH - IMAGE_WIDTH-10, HEIGHT - 1, WIDTH - 10, HEIGHT - 1)
     display.line(WIDTH - 10, 0, WIDTH - 10, HEIGHT - 1)
 
-    # Uncomment this if a white background is wanted behind the company
-    # display.pen(15)
-    # display.rectangle(1, 1, TEXT_WIDTH, COMPANY_HEIGHT - 1)
-
     # Draw the company
     display.pen(15)  # Change this to 0 if a white background is used
     display.font("serif_italic")
@@ -306,6 +291,7 @@ def draw_badge():
         draw_badge_3()
         
 def select_image():
+    # each index is a different image
     if current_image == 1:
         BADGE_IMAGE = imageswap("badge-image.bin")
     if current_image == 2:
@@ -322,9 +308,7 @@ def select_image():
         BADGE_IMAGE = imageswap("badge-image_7.bin")
     return BADGE_IMAGE
         
-# ------------------------------
 #        Program setup
-# ------------------------------
 
 # Create a new Badger and set it to update NORMAL
 display = badger2040.Badger2040()
@@ -341,12 +325,12 @@ except OSError:
     badge = open("badge.txt", "r")
 
 # Read in the next 6 lines
-company = badge.readline()        # "mustelid inc"
-name = badge.readline()           # "H. Badger"
-detail1_title = badge.readline()  # "RP2040"
-detail1_text = badge.readline()   # "2MB Flash"
-detail2_title = badge.readline()  # "E ink"
-detail2_text = badge.readline()   # "296x128px"
+company = badge.readline()        
+name = badge.readline()           
+detail1_title = badge.readline()  
+detail1_text = badge.readline()   
+detail2_title = badge.readline()  
+detail2_text = badge.readline()  
 
 # Truncate all of the text (except for the name as that is scaled)
 company = truncatestring(company, COMPANY_TEXT_SIZE, TEXT_WIDTH)
@@ -360,9 +344,9 @@ detail2_text = truncatestring(detail2_text, DETAILS_TEXT_SIZE,
                               TEXT_WIDTH - DETAIL_SPACING - display.measure_text(detail2_title, DETAILS_TEXT_SIZE))
 
 
-# ------------------------------
+
 #       Main program
-# ------------------------------
+
 select_image()
 
 draw_badge()
@@ -372,6 +356,7 @@ do_update = 0
 while True:
     if display.pressed(badger2040.BUTTON_A):
         if (current_state < 3):
+            # preserve loop of images
             if(current_image >= 1):
                 current_image += 1
                 do_update = 1
@@ -385,11 +370,13 @@ while True:
                 current_image = 6
     
     if display.pressed(badger2040.BUTTON_UP):
+        # increase current state
         if(current_state > 1):
             current_state -= 1
             do_update = 1
 
     if display.pressed(badger2040.BUTTON_DOWN):
+        # decrease button state
         if(current_state < 3):
             current_state += 1
             do_update = 1
@@ -399,8 +386,10 @@ while True:
             current_image = 6
         elif (current_state < 3) and (current_image >= 6):
             current_image = 1
-            
+        
+        # get current image
         select_image()
+        #draw badge
         draw_badge()
         display.update()
         do_update = 0
